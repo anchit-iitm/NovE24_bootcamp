@@ -20,8 +20,8 @@ def homeNew():
     var1 = 'kaushik'
     return render_template('helloNew.html', nameFromPythonBackend=var1)
 
-@app.route('/post', methods=['POST', 'GET'])
-def post():
+@app.route('/postEndpoint', methods=['POST', 'GET'])
+def postPyFn():
     if request.method == 'POST':
         print('post request')
         data = request.form['nameFromHtml']
