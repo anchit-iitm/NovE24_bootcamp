@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -19,7 +19,7 @@ with app.app_context():
 
 # http status codes
 
-@app.route('/', methods=['POST'])
+@app.route('/')
 def index():
     return 'Hello World'
 
@@ -27,7 +27,12 @@ def index():
 @app.route('/homeNew')
 def homeNew():
     var1 = 'kaushik'
-    return jsonify({"nameFromPythonBackend":var1})   
+    return jsonify({"nameFromPythonBackend":var1}), 201 
+
+@app.route('/homeNew1')
+def homeNew1():
+    var1 = 'kaushik'
+    return make_response(jsonify({"nameFromPythonBackend":var1}), 201)   
 
 @app.route('/multiJson')
 def multiJson():
@@ -87,7 +92,7 @@ def storeNew():
         new_row = test(string=data['str'], boolean=data['bool'], num=data['num'])
         db.session.add(new_row)
         db.session.commit()
-        return jsonify({'message': 'success', "id": new_row.id})
+        return make_response(jsonify({'message': 'success', "id": new_row.id}), 201)
     if request.method == "PUT":
         data = request.get_json()
         row = test.query.filter_by(id=data['idFromJson']).first()
@@ -95,15 +100,15 @@ def storeNew():
         row.boolean = data['bool']
         row.num = data['num']
         db.session.commit()
-        return jsonify({'message': 'success', "id": row.id})
+        return make_response(jsonify({'message': 'success', "id": row.id}), 202)
     if request.method == "DELETE":
         data = request.get_json()
         row = test.query.filter_by(id=data['idFromJson']).first()
         if row is None:
-            return jsonify({'message': 'error', "id": data['idFromJson']})
+            return make_response(jsonify({'message': 'error', "id": data['idFromJson']}), 404)
         db.session.delete(row)
         db.session.commit()
-        return jsonify({'message': 'success', "id": row.id})
+        return make_response(jsonify({'message': 'success', "id": row.id}), 202)
 
 # @app.route('/update', methods=['POST'])
 # @app.route('/update', methods=['PATCH'])
