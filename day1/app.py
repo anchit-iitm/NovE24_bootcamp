@@ -56,6 +56,81 @@ def testJson():
     print('num:', data["num"])
     return jsonify(data)
 
+@app.route('/store', methods=['POST'])
+def store():
+    data = request.get_json()
+    new_row = test(string=data['str'], boolean=data['bool'], num=data['num'])
+    db.session.add(new_row)
+    db.session.commit()
+    return jsonify({'message': 'success', "id": new_row.id})
+
+@app.route('/retrieve')
+def retrieve():
+    dataFromDb = test.query.filter_by(id=1).first()
+    return jsonify({'message': 'success', "id": dataFromDb.id, "str": dataFromDb.string, "bool": dataFromDb.boolean, "num": dataFromDb.num})
+
+@app.route('/retrieve/<idFromPath>')
+def retrievePath(idFromPath):
+    dataFromDb = test.query.filter_by(id=idFromPath).first()
+    return jsonify({'message': 'success', "id": dataFromDb.id, "str": dataFromDb.string, "bool": dataFromDb.boolean, "num": dataFromDb.num})
+
+@app.route('/retrieveJson')
+def retrieveJson():
+    passedId = request.get_json()['idFromJson']
+    dataFromDb = test.query.filter_by(id=passedId).first()
+    return jsonify({'message': 'success', "id": dataFromDb.id, "str": dataFromDb.string, "bool": dataFromDb.boolean, "num": dataFromDb.num})
+
+@app.route('/storeNew', methods=['POST', 'PUT', 'DELETE'])
+def storeNew():
+    if request.method == "POST":
+        data = request.get_json()
+        new_row = test(string=data['str'], boolean=data['bool'], num=data['num'])
+        db.session.add(new_row)
+        db.session.commit()
+        return jsonify({'message': 'success', "id": new_row.id})
+    if request.method == "PUT":
+        data = request.get_json()
+        row = test.query.filter_by(id=data['idFromJson']).first()
+        row.string = data['str']
+        row.boolean = data['bool']
+        row.num = data['num']
+        db.session.commit()
+        return jsonify({'message': 'success', "id": row.id})
+    if request.method == "DELETE":
+        data = request.get_json()
+        row = test.query.filter_by(id=data['idFromJson']).first()
+        if row is None:
+            return jsonify({'message': 'error', "id": data['idFromJson']})
+        db.session.delete(row)
+        db.session.commit()
+        return jsonify({'message': 'success', "id": row.id})
+
+# @app.route('/update', methods=['POST'])
+# @app.route('/update', methods=['PATCH'])
+@app.route('/update', methods=['PUT'])
+def update():
+    data = request.get_json()
+    # new_row = test(string=data['str'], boolean=data['bool'], num=data['num'])
+    # db.session.add(new_row)
+    row = test.query.filter_by(id=data['idFromJson']).first()
+    row.string = data['str']
+    row.boolean = data['bool']
+    row.num = data['num']
+    db.session.commit()
+    return jsonify({'message': 'success', "id": row.id})
+
+# @app.route('/update', methods=['POST'])
+# @app.route('/update', methods=['PATCH'])
+# @app.route('/update', methods=['DELETE'])
+@app.route('/delete', methods=['PUT'])
+def delete():
+    data = request.get_json()
+    row = test.query.filter_by(id=data['idFromJson']).first()
+    if row is None:
+        return jsonify({'message': 'error', "id": data['idFromJson']})
+    db.session.delete(row)
+    db.session.commit()
+    return jsonify({'message': 'success', "id": row.id})
 
 if __name__ == '__main__':
     app.run()
