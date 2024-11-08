@@ -81,11 +81,11 @@ def retrievePath(idFromPath):
 
 @app.route('/retrieveJson')
 def retrieveJson():
-    passedId = request.get_json()['idFromJson']
+    passedId = request.get_json()["idFromJson"]
     dataFromDb = test.query.filter_by(id=passedId).first()
     return jsonify({'message': 'success', "id": dataFromDb.id, "str": dataFromDb.string, "bool": dataFromDb.boolean, "num": dataFromDb.num})
 
-@app.route('/storeNew', methods=['POST', 'PUT', 'DELETE'])
+@app.route('/storeNew', methods=['POST', 'PUT', 'DELETE', 'GET']) # changed in day2
 def storeNew():
     if request.method == "POST":
         data = request.get_json()
@@ -109,6 +109,12 @@ def storeNew():
         db.session.delete(row)
         db.session.commit()
         return make_response(jsonify({'message': 'success', "id": row.id}), 202)
+    # changed in day2
+    if request.method == "GET":
+        passedId = request.get_json()
+        print(passedId, type(passedId))
+        dataFromDb = test.query.filter_by(id=passedId["idFromJson"]).first()
+        return jsonify({'message': 'success', "id": dataFromDb.id, "str": dataFromDb.string, "bool": dataFromDb.boolean, "num": dataFromDb.num})
 
 # @app.route('/update', methods=['POST'])
 # @app.route('/update', methods=['PATCH'])
@@ -126,8 +132,8 @@ def update():
 
 # @app.route('/update', methods=['POST'])
 # @app.route('/update', methods=['PATCH'])
-# @app.route('/update', methods=['DELETE'])
-@app.route('/delete', methods=['PUT'])
+@app.route('/delete', methods=['DELETE']) # changed in day2
+# @app.route('/delete', methods=['PUT']) # changed in day2
 def delete():
     data = request.get_json()
     row = test.query.filter_by(id=data['idFromJson']).first()
