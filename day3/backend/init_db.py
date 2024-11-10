@@ -3,7 +3,7 @@
 from models import db, user_datastore
 from app import create_app
 
-app = create_app()
+app, _ = create_app()
 
 with app.app_context():
     db.drop_all()

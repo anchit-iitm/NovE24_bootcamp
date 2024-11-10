@@ -2,14 +2,6 @@ from flask import Flask, jsonify, request, make_response
 from models import db, test, user_datastore
 from flask_security import auth_token_required, auth_required, roles_required, roles_accepted
 
-# app = Flask(__name__)
-# # import config
-# # app.config.from_object(config)
-# from config import LocalDev
-# app.config.from_object(LocalDev)
-# from models import db
-# db.init_app(app)
-
 def create_app():
     initApp = Flask(__name__)
     from config import LocalDev
@@ -18,14 +10,25 @@ def create_app():
 
     from flask_security import Security
     Security(initApp, user_datastore)
-    return initApp
 
-app = create_app()
+    from flask_restful import Api
+    initApi = Api(initApp, prefix="/api") # /api/update
 
-@app.route('/')
+    return initApp, initApi
+
+app, api = create_app()
+
+@app.route('/', methods=['GET'])
 def index():
     return 'Hello World'
 
+from routes.test import Class_Index, HelloWorld
+api.add_resource(Class_Index, '/', '/<num>')
+api.add_resource(HelloWorld, '/hello/<int:num>')
+
+from routes.security import register_api, login_api
+api.add_resource(register_api, '/register')
+api.add_resource(login_api, '/login')
 
 @app.route('/homeNew')
 def homeNew():
@@ -151,48 +154,6 @@ def delete():
     db.session.commit()
     return jsonify({'message': 'success', "id": row.id})
 
-
-@app.route('/api/register', methods=['POST'])
-def register_api():
-    data = request.get_json()
-    if not data:
-        return make_response(jsonify({'message': 'data not found, supply json'}), 400)
-    present_user = user_datastore.find_user(email=data['emailFromJson'])
-
-    if present_user is None: #if not present_user:
-
-        new_user = user_datastore.create_user(email=data['emailFromJson'], password=data['passwordFromJson'])
-        
-        if data['roleFromJson'] == 'admin':
-            return make_response(jsonify({'message': 'admin role cant be granted'}), 406)
-        if data['roleFromJson'] == 'manager':
-            user_datastore.add_role_to_user(new_user, 'manager')
-            
-            user_datastore.deactivate_user(new_user)
-            db.session.commit()
-            return make_response(jsonify({'message': 'success', "email": data['emailFromJson']}), 201)
-        if data['roleFromJson'] == 'customer':
-            user_datastore.add_role_to_user(new_user, 'customer')
-            db.session.commit()
-            return make_response(jsonify({'message': 'success', "email": data['emailFromJson']}), 201)
-    
-    return make_response(jsonify({'message': 'email id is already registered with us', "email": data['emailFromJson']}), 406)
-
-
-@app.route('/api/login', methods=['POST'])
-def login_api():
-    data = request.get_json()
-    if not data:
-        return make_response(jsonify({'message': 'data not found, supply json'}), 400)
-    present_user = user_datastore.find_user(email=data['emailFromJson'])
-    if present_user is None:
-        return make_response(jsonify({'message': 'email id is not registered with us', "email": data['emailFromJson']}), 406)
-    if present_user.active == True:
-        if present_user.password == data['passwordFromJson']:
-            auth_token = present_user.get_auth_token()
-            return make_response(jsonify({'message': 'login success', "email": data['emailFromJson'], 'authToken': auth_token}), 200)
-        return make_response(jsonify({'message': 'login failed, password mismatch', "email": data['emailFromJson']}), 406)
-    return make_response(jsonify({'message': 'login failed, user is not active contact admin', "email": data['emailFromJson']}), 406)
 
 
 if __name__ == '__main__':
