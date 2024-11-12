@@ -14,6 +14,8 @@ def create_app():
     from flask_restful import Api
     initApi = Api(initApp, prefix="/api") # /api/update
 
+    from flask_cors import CORS
+    CORS(initApp)
     return initApp, initApi
 
 app, api = create_app()
@@ -56,7 +58,7 @@ def test_post():
     # data = request.form['nameFromHtml']
     data = request.get_json()['nameFromHtml']
     print('data:', data)
-    return "nameFromPythonBackend=data"
+    return {"nameFromPythonBackend":data}
 
 @app.route('/testJson', methods=['POST'])
 def testJson():
