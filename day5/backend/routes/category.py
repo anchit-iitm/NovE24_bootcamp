@@ -95,8 +95,10 @@ class CategorySpecific(Resource):
     @roles_accepted('admin', 'manager')
     def delete(self, id):
         categories = Category.query.filter_by(id=id).first()
+        # print("categories", categories.delete)
         if not categories:
             return make_response(jsonify({"message": "No category found by that id"}), 404)
         categories.delete = True
         db.session.commit()
+        print("categories", categories.delete)
         return make_response(jsonify({"message": "delete specific category", 'id': id}), 201)

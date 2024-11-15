@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import register from '../views/register.vue'
-
+import Dashboard from '../views/dashboard.vue'
 const routes = [
   {
     path: '/',
@@ -35,6 +35,16 @@ const routes = [
     path: '/category/create',
     name: 'createCategoryRoute',
     component: () => import('@/views/categoryCreate.vue')
+  },
+  {
+    path: '/product/create',
+    name: 'createProductRoute',
+    component: () => import('@/views/productCreate.vue')
+  },
+  {
+    path: '/dashboard',
+    name: 'dashRoute',
+    component: Dashboard
   }
 ]
 

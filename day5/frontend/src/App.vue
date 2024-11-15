@@ -1,10 +1,12 @@
 <template>
   <nav>
+    <router-link :to="{name: 'dashRoute'}">Dashboard</router-link> |
     <router-link to="/">Home</router-link> |
     <router-link :to="{name: 'testRoute'}">Test</router-link> |
     <router-link :to="{name: 'registerRoute'}">Register</router-link> |
     <router-link :to="{name: 'loginRoute'}">Logins</router-link> |
     <router-link :to="{name: 'createCategoryRoute'}">Create Category</router-link> |
+    <router-link :to="{name: 'createProductRoute'}">Create Product</router-link> |    
     <router-link to="/about">About</router-link>
   </nav>
   <router-view/>
