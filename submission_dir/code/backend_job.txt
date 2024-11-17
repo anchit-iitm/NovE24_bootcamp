@@ -1,0 +1,41 @@
+redis:
+    linux/wsl:
+        installation: sudo apt install redis-server -y
+        starting: redis-server
+        stop: (background) sudo service redis-server stop
+
+    *gui:
+        redis-insight: (if using wsl install gui in windows ie .exe)
+        website: https://redis.io/insight/
+
+    python lib:
+        pip install redis
+
+celery
+    installation: sudo apt install celery -y
+    python lib:
+        pip install celery
+
+    worker_cmd: celery -A app.celery_app worker --loglevel=INFO
+
+dev smtp server
+    mailhog:
+        repo: https://github.com/mailhog/MailHog
+        installation: sudo apt-get -y install golang-go; go install github.com/mailhog/MailHog@latest
+        start: ~/go/bin/MailHog
+
+    mailpit:
+        url: https://mailpit.axllent.org/
+        repo: https://github.com/axllent/mailpit
+
+    mailtrap (fake stmp server):
+        url: https://mailtrap.io/fake-smtp-server/
+
+python lib for formulating the email that is to be sent:
+    smtplib: it pre-installed {from smtplib import ____}
+
+    flask_mail: 
+        installation: pip install flask_mail
+
+caching:
+    python lib: pip install flask_caching
