@@ -24,6 +24,12 @@ export default{
             role: ''
         }
     },
+    beforeCreate(){
+        if(localStorage.getItem('authToken')){
+            alert('please logout first')
+            this.$router.push({name: 'home'})
+        }
+    },
     methods:{
         post_register(){
             axios.post('http://localhost:5000/api/register',{

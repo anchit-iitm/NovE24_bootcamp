@@ -18,6 +18,12 @@ export default{
             password: ''
         }
     },
+    beforeCreate(){
+        if(localStorage.getItem('authToken')){
+            alert('please logout first')
+            this.$router.push({name: 'home'})
+        }
+    },
     methods:{
         post_login(){
             axios.post('http://localhost:5000/api/login',{
