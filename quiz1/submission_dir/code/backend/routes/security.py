@@ -40,6 +40,9 @@ class login_api(Resource):
         if present_user.active == True:
             if present_user.password == data['passwordFromJson']:
                 auth_token = present_user.get_auth_token()
+                from flask_security import login_user
+                login_user(present_user)
+                db.session.commit()
                 return make_response(jsonify({'message': 'login success', "email": data['emailFromJson'], 'authToken': auth_token}), 200)
             return make_response(jsonify({'message': 'login failed, password mismatch', "email": data['emailFromJson']}), 406)
         return make_response(jsonify({'message': 'login failed, user is not active contact admin', "email": data['emailFromJson']}), 406)
